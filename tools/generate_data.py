@@ -15,9 +15,9 @@ failures are planted on purpose, the kind an IT auditor actually finds:
   - shared / generic accounts
   - privileged logins at odd hours
 The ground truth is written to data/planted_issues.json so the audit queries
-can be checked against it (scripts/verify.py).
+can be checked against it (src/main/java/audit/Verify.java).
 
-Usage:  python scripts/generate_data.py
+Usage:  python tools/generate_data.py   (optional: the generated data/seed.sql is already in the repo)
 """
 import json
 import random

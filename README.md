@@ -21,7 +21,7 @@ I acted as the IT auditor for **Ridgeline Logistics**, a fictional 180-person co
 | AR-07 | Shared or generic accounts | Medium | 2 accounts |
 | AR-08 | Privileged logins outside business hours | Medium | 2 accounts |
 
-`scripts/verify.py` confirms every test finds exactly the planted issues: **no misses and no false positives** across 180 employees, 479 accounts and 17,063 login events.
+`Verify.java` confirms every test finds exactly the planted issues: **no misses and no false positives** across 180 employees, 479 accounts and 17,063 login events.
 
 ## Data model
 
@@ -58,19 +58,25 @@ Systems in scope: Active Directory, ERP Financials, Payroll, CRM, and VPN.
 
 ## Run it
 
-Needs only Python 3 (SQLite is built in).
+Needs **Java 17+**. The first run downloads the SQLite JDBC driver automatically.
 
 ```bash
-python scripts/run_audit.py   # builds output/audit.db, runs all tests, writes the report
-python scripts/verify.py      # checks the results against the planted issues
+./run.sh           # builds output/audit.db, runs all 8 tests, writes the report
+./run.sh verify    # checks the results against the planted issues
 ```
+
+On Windows, run these in WSL (Ubuntu) or Git Bash. You can also open the folder in IntelliJ (it reads `pom.xml`) and run `AuditRunner`.
 
 Outputs:
 - `output/audit_report.md`: the audit report
 - `output/findings/AR-0X.csv`: every exception per test (opens in Excel)
 - `output/audit.db`: the database. Open it in [DB Browser for SQLite](https://sqlitebrowser.org/) and run the queries yourself.
 
-To regenerate the data: `python scripts/generate_data.py`
+## How the Java runner works
+
+[`AuditRunner.java`](src/main/java/audit/AuditRunner.java) connects to SQLite through **JDBC**, builds the database from `schema.sql` and `seed.sql`, then runs each file in `sql/tests/`. Every test file begins with comment lines like `-- @severity: High` and `-- @risk: ...`; the runner reads those with a regex and uses them to write the report. That keeps each control defined in one place: its SQL file. Results are written to CSV and to a Markdown report that GitHub renders.
+
+[`Verify.java`](src/main/java/audit/Verify.java) re-runs each query and compares the results with the answer key (`data/planted_issues.json`), reporting any missed issue or false positive.
 
 ## The SQL
 
@@ -97,12 +103,13 @@ Each test in [`sql/tests/`](sql/tests) starts with the control's metadata (risk,
 ## Project structure
 
 ```
-sql/schema.sql                 table definitions
-sql/tests/0X_*.sql             the eight audit tests
-data/seed.sql                  generated dataset
-data/planted_issues.json       answer key used by verify.py
-scripts/generate_data.py       builds the fictional company
-scripts/run_audit.py           runs the audit, writes the report
-scripts/verify.py              checks for misses and false positives
-sample-output/audit_report.md  example report
+sql/schema.sql                       table definitions
+sql/tests/0X_*.sql                   the eight audit tests
+src/main/java/audit/AuditRunner.java runs the audit, writes the report
+src/main/java/audit/Verify.java      checks for misses and false positives
+data/seed.sql                        the generated dataset
+data/planted_issues.json             answer key used by Verify
+tools/generate_data.py               optional helper that created the fake data
+run.sh                               compile + run
+sample-output/audit_report.md        example report
 ```
