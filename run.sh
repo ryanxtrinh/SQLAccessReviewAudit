@@ -9,10 +9,25 @@ set -euo pipefail
 cd "$(dirname "$0")"
 
 DRIVER=lib/sqlite-jdbc.jar
-if [ ! -f "$DRIVER" ]; then
-  echo "Downloading SQLite JDBC driver..."
+VERSION=3.50.3.0
+MIRRORS=(
+  "https://repo1.maven.org/maven2/org/xerial/sqlite-jdbc/$VERSION/sqlite-jdbc-$VERSION.jar"
+  "https://github.com/xerial/sqlite-jdbc/releases/download/$VERSION/sqlite-jdbc-$VERSION.jar"
+)
+if [ ! -s "$DRIVER" ]; then
   mkdir -p lib
-  curl -fsSL -o "$DRIVER" https://github.com/xerial/sqlite-jdbc/releases/download/3.50.3.0/sqlite-jdbc-3.50.3.0.jar
+  for url in "${MIRRORS[@]}"; do
+    echo "Downloading SQLite JDBC driver (${url#https://}) ..."
+    if curl -fL --retry 3 --retry-delay 2 --connect-timeout 20 -o "$DRIVER.tmp" "$url"; then
+      mv "$DRIVER.tmp" "$DRIVER"
+      break
+    fi
+    rm -f "$DRIVER.tmp"
+  done
+  if [ ! -s "$DRIVER" ]; then
+    echo "Could not download the driver. Check your internet connection and run ./run.sh again."
+    exit 1
+  fi
 fi
 
 mkdir -p build
