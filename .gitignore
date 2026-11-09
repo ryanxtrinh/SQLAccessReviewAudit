@@ -1,6 +1,5 @@
 output/
 build/
-lib/
 target/
 __pycache__/
 *.pyc

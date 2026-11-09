@@ -21,7 +21,9 @@ import java.util.regex.*;
  * reads those comments and uses them to write the report, so the SQL file is the
  * single place where a control is defined.
  *
- * Run with:  ./run.sh
+ * Run (from the project folder):
+ *   javac -d build src/main/java/audit/*.java
+ *   java -cp "build:lib/*" audit.AuditRunner
  */
 public class AuditRunner {
 

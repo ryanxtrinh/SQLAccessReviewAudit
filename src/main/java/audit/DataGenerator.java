@@ -20,10 +20,11 @@ import java.util.*;
  *   - orphaned accounts with no owner
  *   - shared / generic accounts
  *   - privileged logins at odd hours
- * The answer key is written to data/planted_issues.json so Verify can check the
+ * The answer key is written to data/answer_key.sql so Verify can check the
  * audit queries for misses and false positives.
  *
- * You only need this to rebuild the data:  ./run.sh generate
+ * You only need this to rebuild the data:
+ *   java -cp build audit.DataGenerator
  */
 public class DataGenerator {
 
@@ -464,23 +465,28 @@ public class DataGenerator {
         sb.append("COMMIT;\n");
         Files.writeString(Path.of("data/seed.sql"), sb.toString());
 
-        // answer key (simple JSON, written by hand so no library is needed)
-        StringBuilder json = new StringBuilder("{\n");
-        int k = 0;
+        // answer key: one row per planted issue, as SQL so Verify can load it straight into the database
+        Map<String, String> checkIds = Map.of("terminated_enabled_accounts", "AR-01", "post_termination_login_accounts", "AR-02",
+                "sod_conflict_employees", "AR-03", "dormant_accounts", "AR-04", "privileged_non_it_accounts", "AR-05",
+                "orphaned_accounts", "AR-06", "generic_accounts", "AR-07", "off_hours_privileged_accounts", "AR-08");
+        StringBuilder key = new StringBuilder("""
+                -- Answer key: every control failure planted by DataGenerator.java.
+                -- Verify.java loads this and compares it with what each audit query finds.
+                DROP TABLE IF EXISTS planted_issues;
+                CREATE TABLE planted_issues (
+                    check_id    TEXT    NOT NULL,   -- which audit test should find it
+                    account_id  INTEGER,            -- for account-level tests
+                    employee_id INTEGER             -- for person-level tests (SoD)
+                );
+                """);
         for (var entry : planted.entrySet()) {
-            json.append("  \"").append(entry.getKey()).append("\": [");
-            if (entry.getKey().equals("sod_conflict_employees")) {
-                StringJoiner sj = new StringJoiner(", ");
-                for (int i = 0; i < entry.getValue().size(); i++)
-                    sj.add("{\"employee_id\": " + entry.getValue().get(i) + ", \"rule\": \"" + SOD_RULES[i][0] + "\"}");
-                json.append(sj);
-            } else {
-                StringJoiner sj = new StringJoiner(", ");
-                for (Object o : entry.getValue()) sj.add(o.toString());
-                json.append(sj);
-            }
-            json.append("]").append(++k < planted.size() ? ",\n" : "\n");
+            String id = checkIds.get(entry.getKey());
+            boolean person = entry.getKey().equals("sod_conflict_employees");
+            for (Object o : entry.getValue())
+                key.append(person
+                        ? "INSERT INTO planted_issues (check_id, employee_id) VALUES ('" + id + "', " + o + ");\n"
+                        : "INSERT INTO planted_issues (check_id, account_id) VALUES ('" + id + "', " + o + ");\n");
         }
-        Files.writeString(Path.of("data/planted_issues.json"), json.append("}\n").toString());
+        Files.writeString(Path.of("data/answer_key.sql"), key.toString());
     }
 }

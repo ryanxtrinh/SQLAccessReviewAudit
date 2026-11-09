@@ -58,16 +58,17 @@ Systems in scope: Active Directory, ERP Financials, Payroll, CRM, and VPN.
 
 ## Run it
 
-Needs **Java 17+**. The first run downloads the SQLite JDBC driver automatically.
+Needs **Java 17+**. The SQLite JDBC driver is included in `lib/`, so there's nothing else to install. From the project folder:
 
 ```bash
-./run.sh           # builds output/audit.db, runs all 8 tests, writes the report
-./run.sh verify    # checks the results against the planted issues
+javac -d build src/main/java/audit/*.java      # compile
+java -cp "build:lib/*" audit.AuditRunner       # run the audit and write the report
+java -cp "build:lib/*" audit.Verify            # check results against the answer key
 ```
 
-To rebuild the fictional dataset: `./run.sh generate`
+On Windows, run these in WSL (Ubuntu) or Git Bash. In Windows Command Prompt or PowerShell, use `;` instead of `:` in the classpath (`"build;lib/*"`). You can also open the folder in IntelliJ (it reads `pom.xml`) and run `AuditRunner`.
 
-On Windows, run these in WSL (Ubuntu) or Git Bash. You can also open the folder in IntelliJ (it reads `pom.xml`) and run `AuditRunner`.
+To rebuild the fictional dataset: `java -cp build audit.DataGenerator`
 
 Outputs:
 - `output/audit_report.md`: the audit report
@@ -78,9 +79,9 @@ Outputs:
 
 [`AuditRunner.java`](src/main/java/audit/AuditRunner.java) connects to SQLite through **JDBC**, builds the database from `schema.sql` and `seed.sql`, then runs each file in `sql/tests/`. Every test file begins with comment lines like `-- @severity: High` and `-- @risk: ...`; the runner reads those with a regex and uses them to write the report. That keeps each control defined in one place: its SQL file. Results are written to CSV and to a Markdown report that GitHub renders.
 
-[`DataGenerator.java`](src/main/java/audit/DataGenerator.java) builds the fictional company: employees, accounts, roles and six months of logins, with a fixed random seed so the output is always the same. It plants specific control failures and writes them to `data/planted_issues.json` as an answer key.
+[`DataGenerator.java`](src/main/java/audit/DataGenerator.java) builds the fictional company: employees, accounts, roles and six months of logins, with a fixed random seed so the output is always the same. It plants specific control failures and writes them to `data/answer_key.sql` as an answer key.
 
-[`Verify.java`](src/main/java/audit/Verify.java) re-runs each query and compares the results with the answer key (`data/planted_issues.json`), reporting any missed issue or false positive.
+[`Verify.java`](src/main/java/audit/Verify.java) loads the answer key into the database as a table, re-runs each query, and compares the two, reporting any missed issue or false positive.
 
 ## The SQL
 
@@ -113,7 +114,7 @@ src/main/java/audit/AuditRunner.java runs the audit, writes the report
 src/main/java/audit/Verify.java      checks for misses and false positives
 src/main/java/audit/DataGenerator.java  builds the fictional company dataset
 data/seed.sql                        the generated dataset
-data/planted_issues.json             answer key used by Verify
-run.sh                               compile + run
+data/answer_key.sql                  answer key used by Verify
+lib/sqlite-jdbc.jar                  SQLite JDBC driver (third-party, Apache 2.0)
 sample-output/audit_report.md        example report
 ```
