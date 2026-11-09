@@ -7,7 +7,7 @@
 
 ## 1. Scope
 - **Systems:** Active Directory, Customer CRM, ERP Financials, Payroll System, Remote Access VPN
-- **Population:** 180 employees (14 who left the company in 2026), 479 accounts (449 enabled), 515 role assignments, 17,063 login events
+- **Population:** 180 employees (14 who left the company in 2026), 479 accounts (446 enabled), 523 role assignments, 17,345 login events
 - **Approach:** 100% of the population was tested with SQL queries (no sampling). Each test compares system access data against HR records and the company's access policies.
 
 ## 2. Executive Summary
@@ -33,12 +33,12 @@
 
 | employee_id | employee | department | termination_date | system_id | username | days_since_termination |
 |---|---|---|---|---|---|---|
-| 151 | Nina Bell | Sales | 2026-04-07 | AD | nbell | 207 |
-| 151 | Nina Bell | Sales | 2026-04-07 | VPN | nbell | 207 |
-| 84 | Aisha Adams | Operations | 2026-07-09 | AD | aadams | 114 |
-| 84 | Aisha Adams | Operations | 2026-07-09 | VPN | aadams | 114 |
-| 44 | Maria Cook | Finance | 2026-08-22 | AD | mcook | 70 |
-| 44 | Maria Cook | Finance | 2026-08-22 | VPN | mcook | 70 |
+| 64 | Bianca Wood | HR | 2026-05-14 | AD | bwood | 170 |
+| 64 | Bianca Wood | HR | 2026-05-14 | VPN | bwood | 170 |
+| 8 | Carlos Miller | IT | 2026-05-25 | AD | cmiller | 159 |
+| 8 | Carlos Miller | IT | 2026-05-25 | VPN | cmiller | 159 |
+| 166 | Michael Ward | Sales | 2026-10-14 | AD | mward | 17 |
+| 166 | Michael Ward | Sales | 2026-10-14 | VPN | mward | 17 |
 
 **Criteria:** All system access is disabled on or before an employee's termination date.
 
@@ -55,8 +55,8 @@
 
 | employee | termination_date | system_id | username | logins_after_termination | first_login_after | last_login_after | source_ips |
 |---|---|---|---|---|---|---|---|
-| Aisha Adams | 2026-07-09 | AD | aadams | 2 | 2026-07-10 15:07:58 | 2026-07-16 17:14:55 | 203.0.113.119,203.0.113.120 |
-| Maria Cook | 2026-08-22 | AD | mcook | 2 | 2026-08-25 09:33:19 | 2026-08-28 12:01:02 | 203.0.113.56,203.0.113.41 |
+| Michael Ward | 2026-10-14 | AD | mward | 3 | 2026-10-16 07:26:53 | 2026-10-23 11:32:08 | 203.0.113.83 |
+| Carlos Miller | 2026-05-25 | AD | cmiller | 3 | 2026-05-28 13:50:23 | 2026-06-05 07:54:24 | 203.0.113.52 |
 
 **Criteria:** No account is used after its owner's employment ends.
 
@@ -73,10 +73,10 @@
 
 | rule_id | employee | department | job_title | role_a | role_b | description |
 |---|---|---|---|---|---|---|
-| SOD-01 | Olivia Murphy | Finance | Procurement Specialist | ERP_VENDOR_CREATE | ERP_PAYMENT_APPROVE | Creating vendors and approving payments lets one person pay a fake vendor |
-| SOD-02 | Olivia Miller | Finance | Accounts Payable Clerk | ERP_INVOICE_ENTER | ERP_PAYMENT_RELEASE | Entering invoices and releasing payment runs lets one person pay their own invoice |
-| SOD-03 | Victor Walker | HR | Payroll Specialist | PAY_EDIT | PAY_APPROVE | Editing pay rates and approving payroll lets one person raise their own pay |
-| SOD-04 | Gavin Rogers | IT | Systems Administrator | IAM_USER_CREATE | IAM_ACCESS_APPROVE | Creating accounts and approving access lets one person grant themselves any access |
+| SOD-01 | James Wright | Finance | Procurement Specialist | ERP_VENDOR_CREATE | ERP_PAYMENT_APPROVE | Creating vendors and approving payments lets one person pay a fake vendor |
+| SOD-02 | Grace Richardson | Finance | Accounts Payable Clerk | ERP_INVOICE_ENTER | ERP_PAYMENT_RELEASE | Entering invoices and releasing payment runs lets one person pay their own invoice |
+| SOD-03 | Patrick Carter | HR | Payroll Specialist | PAY_EDIT | PAY_APPROVE | Editing pay rates and approving payroll lets one person raise their own pay |
+| SOD-04 | David Richardson | IT | Help Desk Technician | IAM_USER_CREATE | IAM_ACCESS_APPROVE | Creating accounts and approving access lets one person grant themselves any access |
 
 **Criteria:** No single person holds both roles in any segregation-of-duties (SoD) rule.
 
@@ -93,9 +93,9 @@
 
 | employee | department | job_title | system_id | username | role_name | granted_date |
 |---|---|---|---|---|---|---|
-| Brian Brooks | Finance | Financial Analyst | ERP | bbrooks | ERP System Administrator | 2026-05-08 |
-| Robert Bennett | Sales | Account Executive | CRM | rbennett | CRM Administrator | 2026-05-08 |
-| Noah Howard | Operations | Logistics Coordinator | AD | nhoward | Domain Administrator | 2026-04-14 |
+| Alicia Cox | Operations | Logistics Coordinator | AD | acox | Domain Administrator | 2026-05-01 |
+| Omar Cox | Finance | AP Manager | ERP | ocox | ERP System Administrator | 2026-03-15 |
+| Nina Carter | Sales | Customer Success Rep | CRM | ncarter | CRM Administrator | 2026-03-07 |
 
 **Criteria:** Privileged (administrator) roles are held only by IT staff whose job requires them.
 
@@ -112,13 +112,13 @@
 
 | employee | department | system_id | username | created_date | last_successful_login | days_inactive |
 |---|---|---|---|---|---|---|
-| Brian Collins | Operations | VPN | bcollins | 2022-10-30 | 2026-06-12 13:43:47 | 140 |
-| Patrick Morris | Sales | VPN | pmorris | 2015-04-11 | 2026-06-12 11:23:38 | 140 |
-| Yuna Wright | Sales | VPN | ywright | 2024-08-19 | 2026-06-12 08:26:24 | 140 |
-| Maria Morris | Sales | VPN | mmorris | 2020-09-14 | 2026-07-10 11:38:34 | 112 |
-| Noah King | Finance | VPN | nking | 2017-12-14 | 2026-07-17 17:56:59 | 105 |
-| Grace Ward | Operations | ERP | gward2 | 2026-08-14 | never | 78 |
-| Victor Phillips | Operations | ERP | vphillips | 2026-08-14 | never | 78 |
+| Jada Morgan | Finance | VPN | jmorgan | 2021-02-13 | 2026-06-02 08:20:09 | 150 |
+| Ethan Richardson | Operations | VPN | erichardson | 2025-12-20 | 2026-06-02 13:02:40 | 150 |
+| Alicia Baker | Sales | VPN | abaker | 2023-08-29 | 2026-06-12 08:07:31 | 140 |
+| Robert Miller | Finance | VPN | rmiller | 2021-01-07 | 2026-06-19 17:38:52 | 133 |
+| Olivia Turner | Sales | VPN | oturner | 2017-07-03 | 2026-06-23 09:52:02 | 129 |
+| Victor Kelly | Operations | ERP | vkelly | 2026-08-14 | never | 78 |
+| James Cook | Operations | ERP | jcook | 2026-08-14 | never | 78 |
 
 **Criteria:** Enabled user accounts with no successful login in 90 days (or never used, 30+ days after creation) are disabled.
 
@@ -135,9 +135,9 @@
 
 | system_id | username | employee_id_on_account | created_date | last_successful_login |
 |---|---|---|---|---|
-| CRM | jmorris_old |  | 2024-03-10 | 2026-09-28 13:30:18 |
-| ERP | contractor07 | 9999 | 2024-03-10 | 2026-09-25 16:16:20 |
-| VPN | vendor_access |  | 2024-10-10 | 2026-09-29 11:51:51 |
+| CRM | jmorris_old |  | 2024-05-10 | 2026-09-29 17:55:55 |
+| ERP | contractor07 | 9999 | 2024-03-10 | 2026-09-25 17:06:30 |
+| VPN | vendor_access |  | 2024-10-10 | 2026-09-25 10:54:48 |
 
 **Criteria:** Every enabled user account maps to a current or former employee in the HR system.
 
@@ -154,8 +154,8 @@
 
 | system_id | username | recorded_owner | distinct_source_ips | successful_logins | reason |
 |---|---|---|---|---|---|
-| AD | shared_ops | Aisha Kelly | 9 | 34 | Generic name + used from many machines |
-| ERP | test_user1 | Owen Kelly | 2 | 35 | Generic name |
+| AD | shared_ops | Maria Bailey | 8 | 36 | Generic name + used from many machines |
+| ERP | test_user1 | Ethan Morgan | 2 | 38 | Generic name |
 
 **Criteria:** User accounts are assigned to one named individual. Generic names (test, shared, temp, admin, guest) are not used for user accounts.
 
@@ -172,8 +172,8 @@
 
 | system_id | username | employee | department | off_hours_logins | weekend | overnight | first_seen | last_seen |
 |---|---|---|---|---|---|---|---|---|
-| AD | gward | Gavin Ward | IT | 4 | 3 | 1 | 2026-06-27 17:50:00 | 2026-08-01 10:28:00 |
-| AD | nhoward | Noah Howard | Operations | 3 | 1 | 2 | 2026-07-18 11:29:00 | 2026-09-25 01:13:00 |
+| AD | acox | Alicia Cox | Operations | 4 | 3 | 1 | 2026-06-20 10:30:00 | 2026-10-03 02:36:00 |
+| AD | kgray | Kevin Gray | IT | 4 | 0 | 4 | 2026-06-08 00:11:00 | 2026-08-05 04:04:00 |
 
 **Criteria:** Administrator activity happens during business hours (Mon-Fri, 06:00-20:00) or under a documented change window.
 

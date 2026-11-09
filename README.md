@@ -21,7 +21,7 @@ I acted as the IT auditor for **Ridgeline Logistics**, a fictional 180-person co
 | AR-07 | Shared or generic accounts | Medium | 2 accounts |
 | AR-08 | Privileged logins outside business hours | Medium | 2 accounts |
 
-`Verify.java` confirms every test finds exactly the planted issues: **no misses and no false positives** across 180 employees, 479 accounts and 17,063 login events.
+`Verify.java` confirms every test finds exactly the planted issues: **no misses and no false positives** across 180 employees, 479 accounts and 17,345 login events.
 
 ## Data model
 
@@ -65,6 +65,8 @@ Needs **Java 17+**. The first run downloads the SQLite JDBC driver automatically
 ./run.sh verify    # checks the results against the planted issues
 ```
 
+To rebuild the fictional dataset: `./run.sh generate`
+
 On Windows, run these in WSL (Ubuntu) or Git Bash. You can also open the folder in IntelliJ (it reads `pom.xml`) and run `AuditRunner`.
 
 Outputs:
@@ -75,6 +77,8 @@ Outputs:
 ## How the Java runner works
 
 [`AuditRunner.java`](src/main/java/audit/AuditRunner.java) connects to SQLite through **JDBC**, builds the database from `schema.sql` and `seed.sql`, then runs each file in `sql/tests/`. Every test file begins with comment lines like `-- @severity: High` and `-- @risk: ...`; the runner reads those with a regex and uses them to write the report. That keeps each control defined in one place: its SQL file. Results are written to CSV and to a Markdown report that GitHub renders.
+
+[`DataGenerator.java`](src/main/java/audit/DataGenerator.java) builds the fictional company: employees, accounts, roles and six months of logins, with a fixed random seed so the output is always the same. It plants specific control failures and writes them to `data/planted_issues.json` as an answer key.
 
 [`Verify.java`](src/main/java/audit/Verify.java) re-runs each query and compares the results with the answer key (`data/planted_issues.json`), reporting any missed issue or false positive.
 
@@ -107,9 +111,9 @@ sql/schema.sql                       table definitions
 sql/tests/0X_*.sql                   the eight audit tests
 src/main/java/audit/AuditRunner.java runs the audit, writes the report
 src/main/java/audit/Verify.java      checks for misses and false positives
+src/main/java/audit/DataGenerator.java  builds the fictional company dataset
 data/seed.sql                        the generated dataset
 data/planted_issues.json             answer key used by Verify
-tools/generate_data.py               optional helper that created the fake data
 run.sh                               compile + run
 sample-output/audit_report.md        example report
 ```

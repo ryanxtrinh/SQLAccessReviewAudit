@@ -1,59 +1,10 @@
 {
-  "terminated_enabled_accounts": [
-    1215,
-    1216,
-    1109,
-    1110,
-    1376,
-    1377
-  ],
-  "post_termination_login_accounts": [
-    1215,
-    1109
-  ],
-  "sod_conflict_employees": [
-    {
-      "employee_id": 30,
-      "rule": "SOD-01"
-    },
-    {
-      "employee_id": 22,
-      "rule": "SOD-02"
-    },
-    {
-      "employee_id": 57,
-      "rule": "SOD-03"
-    },
-    {
-      "employee_id": 15,
-      "rule": "SOD-04"
-    }
-  ],
-  "dormant_accounts": [
-    1322,
-    1089,
-    1356,
-    1404,
-    1437,
-    1469,
-    1470
-  ],
-  "privileged_non_it_accounts": [
-    1072,
-    1331,
-    1360
-  ],
-  "orphaned_accounts": [
-    1471,
-    1472,
-    1473
-  ],
-  "generic_accounts": [
-    1474,
-    1475
-  ],
-  "off_hours_privileged_accounts": [
-    1002,
-    1331
-  ]
+  "terminated_enabled_accounts": [1421, 1422, 1014, 1015, 1169, 1170],
+  "post_termination_login_accounts": [1421, 1014],
+  "sod_conflict_employees": [{"employee_id": 50, "rule": "SOD-01"}, {"employee_id": 30, "rule": "SOD-02"}, {"employee_id": 65, "rule": "SOD-03"}, {"employee_id": 19, "rule": "SOD-04"}],
+  "dormant_accounts": [1377, 1404, 1044, 1232, 1098, 1469, 1470],
+  "privileged_non_it_accounts": [1108, 1308, 1444],
+  "orphaned_accounts": [1471, 1472, 1473],
+  "generic_accounts": [1474, 1475],
+  "off_hours_privileged_accounts": [1002, 1308]
 }
