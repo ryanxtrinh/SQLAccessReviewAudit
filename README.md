@@ -1,5 +1,7 @@
 # IT Access Review Audit (SQL)
 
+[![Build](https://github.com/ryanxtrinh/SQLAccessReviewAudit/actions/workflows/build.yml/badge.svg)](https://github.com/ryanxtrinh/SQLAccessReviewAudit/actions/workflows/build.yml)
+
 A simulated **user access review**, one of the most common tests in IT audit, performed entirely in SQL.
 
 I acted as the IT auditor for **Ridgeline Logistics**, a fictional 180-person company, and tested whether system access across five applications matched HR records and the company's access policies. Eight SQL tests check the whole population (no sampling) and produce an audit report in standard **Condition / Criteria / Risk / Recommendation** format, mapped to **NIST CSF 2.0** and **ISO 27001**.
