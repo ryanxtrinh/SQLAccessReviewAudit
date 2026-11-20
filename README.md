@@ -85,6 +85,20 @@ Outputs:
 
 [`Verify.java`](src/main/java/audit/Verify.java) loads the answer key into the database as a table, re-runs each query, and compares the two, reporting any missed issue or false positive.
 
+## Testing the tests
+
+```bash
+mvn test
+```
+
+The JUnit suite tests the audit queries themselves:
+
+- **Edge cases per control** ([`AuditRulesTest`](src/test/java/audit/AuditRulesTest.java)): each test builds a tiny in-memory database with one real exception next to look-alikes that must *not* be flagged. Examples: a login on the termination day itself (fine) vs. the day after (AR-02), an SoD conflict split across two accounts of one person (AR-03), a disabled account holding the conflicting role, a service account logging in at 2 a.m. (AR-08), and an account used from 4 vs. 5 machines (AR-07).
+- **Full dataset** ([`PlantedIssuesTest`](src/test/java/audit/PlantedIssuesTest.java)): the same check as `Verify.java`, on all 180 employees.
+- **Metadata** ([`TestMetadataTest`](src/test/java/audit/TestMetadataTest.java)): every SQL file has the criteria, risk, recommendation and framework mapping the report needs.
+
+GitHub Actions also runs the README steps with plain `javac`/`java`, confirms `DataGenerator` reproduces `data/` byte for byte, runs `Verify`, and saves the generated report as a build artifact.
+
 ## The SQL
 
 Each test in [`sql/tests/`](sql/tests) starts with the control's metadata (risk, criteria, recommendation, framework mapping) in comments, followed by the query. Techniques used:
@@ -115,6 +129,7 @@ sql/tests/0X_*.sql                   the eight audit tests
 src/main/java/audit/AuditRunner.java runs the audit, writes the report
 src/main/java/audit/Verify.java      checks for misses and false positives
 src/main/java/audit/DataGenerator.java  builds the fictional company dataset
+src/test/java/audit/                 JUnit tests for the audit queries
 data/seed.sql                        the generated dataset
 data/answer_key.sql                  answer key used by Verify
 lib/sqlite-jdbc.jar                  SQLite JDBC driver (third-party, Apache 2.0)

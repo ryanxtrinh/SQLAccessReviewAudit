@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: maven
+      - name: JUnit tests
+        run: mvn -B test
+
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - name: Compile (plain javac, as in the README)
+        run: javac -d build src/main/java/audit/*.java
+      - name: Dataset is reproducible from the fixed seed
+        run: |
+          java -cp build audit.DataGenerator
+          git diff --exit-code data/
+      - name: Run the audit
+        run: java -cp "build:lib/*" audit.AuditRunner
+      - name: Verify against the answer key (no misses, no false positives)
+        run: java -cp "build:lib/*" audit.Verify
+      - uses: actions/upload-artifact@v4
+        with:
+          name: audit-report
+          path: output/
