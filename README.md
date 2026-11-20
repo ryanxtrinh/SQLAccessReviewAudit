@@ -1,6 +1,6 @@
 # IT Access Review Audit (SQL)
 
-[![Build](https://github.com/ryanxtrinh/SQLAccessReviewAudit/actions/workflows/build.yml/badge.svg)](https://github.com/ryanxtrinh/SQLAccessReviewAudit/actions/workflows/build.yml)
+[![CI](https://github.com/ryanxtrinh/SQLAccessReviewAudit/actions/workflows/ci.yml/badge.svg)](https://github.com/ryanxtrinh/SQLAccessReviewAudit/actions/workflows/ci.yml)
 
 A simulated **user access review**, one of the most common tests in IT audit, performed entirely in SQL.
 
